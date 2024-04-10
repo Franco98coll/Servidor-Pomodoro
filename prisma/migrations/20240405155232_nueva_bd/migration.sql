@@ -1,0 +1,40 @@
+BEGIN TRY
+
+BEGIN TRAN;
+
+-- CreateTable
+CREATE TABLE [dbo].[Task] (
+    [TaskId] INT NOT NULL IDENTITY(1,1),
+    [Description] VARCHAR(1000),
+    [Status] NVARCHAR(1000) NOT NULL,
+    [UserId] INT NOT NULL,
+    CONSTRAINT [Task_pkey] PRIMARY KEY CLUSTERED ([TaskId])
+);
+
+-- CreateTable
+CREATE TABLE [dbo].[User] (
+    [UserId] INT NOT NULL IDENTITY(1,1),
+    [Name] NVARCHAR(1000) NOT NULL,
+    [Email] NVARCHAR(1000) NOT NULL,
+    [Photo] NVARCHAR(1000),
+    [Password] NVARCHAR(1000),
+    [Notes] NVARCHAR(1000),
+    CONSTRAINT [User_pkey] PRIMARY KEY CLUSTERED ([UserId]),
+    CONSTRAINT [User_Email_key] UNIQUE NONCLUSTERED ([Email])
+);
+
+-- AddForeignKey
+ALTER TABLE [dbo].[Task] ADD CONSTRAINT [Task_UserId_fkey] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User]([UserId]) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+COMMIT TRAN;
+
+END TRY
+BEGIN CATCH
+
+IF @@TRANCOUNT > 0
+BEGIN
+    ROLLBACK TRAN;
+END;
+THROW
+
+END CATCH
